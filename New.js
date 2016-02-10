@@ -12,7 +12,7 @@ var y=0;
 
 function setup() {
     rectMode(CENTER);
-    bg = loadImage("bg.png");
+    bg = loadImage("/bg.png");
 
     y++;
   if (y > height) {
