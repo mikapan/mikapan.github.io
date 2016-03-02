@@ -68,6 +68,10 @@ function draw() {
 
 function windowResized(){
     resizeCanvas(windowWidth,windowHeight);
+    attractors.forEach(function(a){
+        a.pos.x = width/2;
+        a.pos.y = height/2;
+    });
 }
 
  var Particle= function(pp,vv,hh){
@@ -90,18 +94,29 @@ function windowResized(){
             //var radius = 20;              
             var att = p5.Vector.sub(A.getPos(),pos);
             var distanceSq = att.magSq();
-             if(distanceSq > 1.5){
-                    att.div(distanceSq);
-                    att.mult(4*A.getStrength());
+             if(distanceSq > 10){
+                    //att.div(distanceSq);
+                    //att.mult(2*A.getStrength());
+                    //att.normalize();
+                    att.div(20);
+                    //if(att.mag() > 10){ att.normalize(); att.mult(4);}
                     acc.add(att);
-                                }
+              }
             
             });
     vel.add(acc);
+    //vel.mult(0);
+    var vvv = acc.rotate(HALF_PI);
+       // vvv.normalize();
+    //vvv.mult(100);
+    vel.set(vvv.x, vvv.y);
+        //vel.limit(3.5);
+
+    
     pos.add(vel);
 
     acc.mult(0);
-    vel.limit(6.5);
+    //vel.limit(3.5);
         
     
 }
@@ -111,7 +126,7 @@ function windowResized(){
     this.draw= function(){
             
         var transparency = map(this.lifeSpan,0,initialLifeSpan,0,80);
-        stroke(hh,80,80,transparency);
+        stroke(hh,80,80);
         line(pos.x,pos.y,pos.x -0.5*vel.x, pos.y - 0.5*vel.y);
         noStroke();
         fill(hh,80,80,transparency);
@@ -122,7 +137,8 @@ function windowResized(){
         }
     
     this.areYouDeadYet = function(){
-            return this.lifeSpan <= 0;
+        return false;
+        //return this.lifeSpan <= 0;
     }
     
     this.getPos = function(){
@@ -133,40 +149,46 @@ function windowResized(){
     
    function createMightyParticles(initialPos){
     //sound.play();
-     var pos; if(!initialPos){pos = createVector(mouseX,
-                                                 mouseY);
-  }else{
-      pos = initialPos.copy();
-  }
+     var pos; 
+       if(!initialPos){
+           //pos = createVector(mouseX/width, mouseY/height);
+           pos = createVector(mouseX, mouseY);
+        }else{
+            pos = initialPos.copy();
+        }
+       
+       
             
         var hue=random(50,65);
-       var saturation = random(0,80);
+        var saturation = random(0,80);
        
-       for(var i=0;i<60;i++){
-        var vel = createVector(0,1);
-        vel.rotate(random(0,TWO_PI));
-        vel.mult(random(1,3));
-            
-        var newBorn = new Particle(pos, vel, hue);
-        particleSystem.push(newBorn)
+       for(var i=0;i<1;i++){
+            //pos = createVector(random(0, width), random(0, height));
+            var vel = createVector(0,1);
+            vel.rotate(random(0,TWO_PI));
+            vel.mult(random(1,3));
+
+            var newBorn = new Particle(pos, vel, hue);
+            particleSystem.push(newBorn)
             
         }
 }
     
 var Attractor = function(pos, s){
-    var pos = pos.copy();
+    this.pos = pos.copy();
     var strength = s;
     this.draw = function (){
         noStroke ();
         fill(255,223,0);
-        ellipse(pos.x, pos.y,
+        ellipse(this.pos.x, this.pos.y,
                strength, strength);
     }
 this.getStrength = function(){
     return strength;
 }
 this.getPos = function(){
-    return pos.copy();
+    //return createVector(percentage.x * width, pertentage.y* height);
+    return this.pos.copy();
 }
 
 }
